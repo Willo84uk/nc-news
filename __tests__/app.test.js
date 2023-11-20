@@ -3,7 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const data = require("../db/data/test-data/index");
 const seed = require("../db/seeds/seed");
-
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -11,8 +11,6 @@ beforeEach(() => {
 afterAll(() => {
   return db.end();
 });
-
-
 
 describe("GET /not-a-path", () => {
   test("404: responds with a 404 if path not found with a user message to confirm reason for error", () => {
@@ -25,22 +23,16 @@ describe("GET /not-a-path", () => {
   });
 });
 
-
-
 describe("GET /api", () => {
-    test("200: responds with an object describing all available endpoints", () => {
-      return request(app)
-        .get("/api")
-        .expect(200)
-        .then(({ body }) => {
-          for(const [key, value] of Object.entries(body.endpoints)){
-            expect(Object.keys(value)).toMatchObject(["description","queries","formatOfRequestBody","exampleResponse"])
-          }
-        });
-    });
+  test("200: responds with an object describing all available endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints);
+      });
+  });
 });
-
-
 
 describe("GET /api/topics", () => {
   describe("Functionality", () => {
