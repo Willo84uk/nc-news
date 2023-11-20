@@ -57,3 +57,56 @@ describe("GET /api/topics", () => {
     });
   });
 });
+
+describe("GET /not-a-path", () => {
+  test("404: responds with a 404 if path not found with a user message to confirm reason for error", () => {
+    return request(app)
+      .get("/not-a-path")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  describe("Functionality", () => {
+    test("200: should return an object containing selected article including the following properties: author, title, article_id, body, topic, created_at, votes, art_img_url ", () => {
+      return request(app)
+        .get("/api/articles/5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(Object.keys(body.article)).toMatchObject([
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "body",
+            "created_at",
+            "votes",
+            "article_img_url",
+          ]);
+          expect(body.article.article_id).toBe(5);
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if no selected article does not exist in the database", () => {
+      return request(app)
+        .get("/api/articles/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("topic not found with this article id");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
+        return request(app)
+          .get("/api/articles/apples")
+          .expect(400)
+          .then(({ body }) => {
+              console.log(body)
+            expect(body.msg).toBe("bad request");
+          });
+      });
+  });
+});
