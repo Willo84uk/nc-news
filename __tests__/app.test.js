@@ -121,3 +121,47 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("GET /api/articles", () => {
+    describe("Functionality", () => {
+      test("200: should return an object containing all articles including the following properties: author, title, article_id, topic, created_at, votes, art_img_url, comment_count, automatically sorted in reverse date order", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body }) => {
+            body.articles.forEach((article) => {
+              expect(Object.keys(article)).toMatchObject([
+                "article_id",
+                "title",
+                "topic",
+                "author",
+                "created_at",
+                "votes",
+                "article_img_url",
+                "comment_count"
+              ]);
+            })
+            expect(body.articles.length).toBe(13);
+            expect(body.articles).toBeSortedBy('created_at', {descending: true})
+          });
+      });
+    });
+    describe("Error handling", () => {
+      test("404: should return a 404 error message if no articles exist in the database", () => {
+        return db.query(`DELETE FROM comments *;`).then(() => {
+          return db
+            .query(`DELETE FROM articles *;`)
+            .then(() => {
+              return request(app)
+                .get("/api/articles")
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).toBe("no articles exist");
+                });
+            });
+        });
+      });
+    });
+  });
+
+
