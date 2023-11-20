@@ -30,6 +30,7 @@ describe("GET /api/topics", () => {
         .expect(200)
         .then(({ body }) => {
           expect(Array.isArray(body.topics)).toBe(true);
+          expect(body.topics.length).toBe(3);
           body.topics.forEach((topic) => {
             expect(Object.keys(topic)).toMatchObject(["slug", "description"]);
           });
