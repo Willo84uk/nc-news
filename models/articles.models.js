@@ -6,7 +6,7 @@ exports.selectArticlesById = (articleId) => {
     FROM articles WHERE article_id = $1`, [articleId])
     .then(({rows}) => {
         if(!rows.length){
-            return Promise.reject({status: 404, msg: "topic not found with this article id"})
+            return Promise.reject({status: 404, msg: "article not found with this article id"})
         }        
         return {rows}
     }) 

@@ -96,7 +96,7 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/999")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("topic not found with this article id");
+          expect(body.msg).toBe("article not found with this article id");
         });
     });
     test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
@@ -104,7 +104,6 @@ describe("GET /api/articles/:article_id", () => {
           .get("/api/articles/apples")
           .expect(400)
           .then(({ body }) => {
-              console.log(body)
             expect(body.msg).toBe("bad request");
           });
       });
