@@ -204,14 +204,16 @@ describe("GET /api/articles/:article_id/comments", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   describe("Functionality", () => {
-    test("204: should delete selected comment from db and return a 204 status", () => {
+    test("204: should delete selected comment from db and return a 204 status, a further request to the same api for the same comment should subsequently result in a 404 error 'comment not found'", () => {
       return request(app)
         .delete("/api/comments/4")
         .expect(204)
         .then(() => {
-          return db.query(`SELECT * FROM comments WHERE comment_id = 4`)
-          .then(({rows}) => {
-            expect(rows.length).toBe(0)
+          return request(app)
+          .delete("/api/comments/4")
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toBe("comment not found")
           })
     });
   });
