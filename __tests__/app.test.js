@@ -112,40 +112,99 @@ describe("GET /api/articles/:article_id", () => {
         });
     });
     test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
-        return request(app)
-          .get("/api/articles/apples")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("bad request");
-          });
-      });
+      return request(app)
+        .get("/api/articles/apples")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
   });
 });
 
 describe("GET /api/articles", () => {
-    describe("Functionality", () => {
-      test("200: should return an object containing all articles including the following properties: author, title, article_id, topic, created_at, votes, art_img_url, comment_count, automatically sorted in reverse date order", () => {
-        return request(app)
-          .get("/api/articles")
-          .expect(200)
-          .then(({ body }) => {
-            body.articles.forEach((article) => {
-              expect(Object.keys(article)).toMatchObject([
-                "article_id",
-                "title",
-                "topic",
-                "author",
-                "created_at",
-                "votes",
-                "article_img_url",
-                "comment_count"
-              ]);
-            })
-            expect(body.articles.length).toBe(13);
-            expect(body.articles).toBeSortedBy('created_at', {descending: true})
+  describe("Functionality", () => {
+    test("200: should return an object containing all articles including the following properties: author, title, article_id, topic, created_at, votes, art_img_url, comment_count, automatically sorted in reverse date order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
           });
-      });
+          expect(body.articles.length).toBe(13);
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
     });
   });
+});
 
-
+describe("POST /api/articles/:article_id/comments", () => {
+  describe("Functionality", () => {
+    test("201: should insert new comment into the database and send back an object containing new comment", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({ username: "lurker", body: "It is good" })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 19,
+            body: "It is good",
+            article_id: 2,
+            author: "lurker",
+            votes: 0,
+            created_at: expect.any(String),
+          });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if selected article does not exist in the database", () => {
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send({ username: "lurker", body: "Awful" })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("key not found in database");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
+      return request(app)
+        .post("/api/articles/apples/comments")
+        .send({ username: "lurker", body: "Awful" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("404: should return a 404 error message if the username doesn't exist", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({ username: "J8723", body: "Awful" })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("key not found in database");
+        });
+    });
+    test("400: should return a 400 error message if the any required data is missing", () => {
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send({ body: "Awful" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
