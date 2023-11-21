@@ -264,5 +264,23 @@ describe("PATCH /api/articles/:article_id", () => {
           expect(body.msg).toBe("bad request");
         });
     });
+    test("400: should return a 400 error message if inc_votes is not provided in request", () => {
+      return request(app)
+        .patch("/api/articles/5")
+        .send({ number_of_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if inc_votes is provided in an incorrect format", () => {
+      return request(app)
+        .patch("/api/articles/5")
+        .send({ inc_votes: "twenty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
   });
 });
