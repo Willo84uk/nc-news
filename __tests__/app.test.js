@@ -305,6 +305,144 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("GET /api/users", () => {
+  describe("Functionality", () => {
+    test("200: should return an array of objects with keys of username, name and avatar_url", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users.length).toBe(4);
+          body.users.forEach((user) => {
+            expect(Object.keys(user)).toMatchObject([
+              "username",
+              "name",
+              "avatar_url",
+            ]);
+          });
+        });
+    });
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  describe("Functionality", () => {
+    test("200: should update the votes on a given article and return an updated article object", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -10 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(Object.keys(body.article)).toMatchObject([
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "body",
+            "created_at",
+            "votes",
+            "article_img_url",
+          ]);
+          expect(body.article.article_id).toBe(1);
+          expect(body.article.votes).toBe(90);
+        })
+        .then(() => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 20 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(Object.keys(body.article)).toMatchObject([
+                "article_id",
+                "title",
+                "topic",
+                "author",
+                "body",
+                "created_at",
+                "votes",
+                "article_img_url",
+              ]);
+              expect(body.article.article_id).toBe(1);
+              expect(body.article.votes).toBe(110);
+            });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if no selected article does not exist in the database", () => {
+      return request(app)
+        .patch("/api/articles/999")
+        .send({ inc_votes: 20 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article not found with this article id");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
+      return request(app)
+        .patch("/api/articles/apples")
+        .send({ inc_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if inc_votes is not provided in request", () => {
+      return request(app)
+        .patch("/api/articles/5")
+        .send({ number_of_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if inc_votes is provided in an incorrect format", () => {
+      return request(app)
+        .patch("/api/articles/5")
+        .send({ inc_votes: "twenty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Functionality", () => {
+    test("204: should delete selected comment from db and return a 204 status, a further request to the same api for the same comment should subsequently result in a 404 error 'comment not found'", () => {
+      return request(app)
+        .delete("/api/comments/4")
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .delete("/api/comments/4")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("comment not found");
+            });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if selected comment does not exist in the database", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for comment id in path", () => {
+      return request(app)
+        .delete("/api/comments/apples")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   describe("Functionality", () => {
     test("200: should update the votes on a given article and return an updated article object", () => {
@@ -419,6 +557,21 @@ describe("DELETE /api/comments/:comment_id", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+describe("GET /api/users", () => {
+  describe("Functionality", () => {
+    test("200: should return an array of objects with keys of username, name and avatar_url", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users.length).toBe(4);
+          body.users.forEach((user) => {
+            expect(Object.keys(user)).toMatchObject(["username", "name", "avatar_url"]);
+          });
         });
     });
   });
