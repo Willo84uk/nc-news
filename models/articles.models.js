@@ -19,10 +19,7 @@ exports.selectArticles = () => {
     LEFT JOIN comments ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
     ORDER BY created_at DESC`)
-    .then(({rows}) => {
-        if(!rows.length){
-            return Promise.reject({status: 404, msg: "no articles exist"})
-        }        
+    .then(({rows}) => {    
         return {rows}
     })
 }

@@ -146,22 +146,6 @@ describe("GET /api/articles", () => {
           });
       });
     });
-    describe("Error handling", () => {
-      test("404: should return a 404 error message if no articles exist in the database", () => {
-        return db.query(`DELETE FROM comments *;`).then(() => {
-          return db
-            .query(`DELETE FROM articles *;`)
-            .then(() => {
-              return request(app)
-                .get("/api/articles")
-                .expect(404)
-                .then(({ body }) => {
-                  expect(body.msg).toBe("no articles exist");
-                });
-            });
-        });
-      });
-    });
   });
 
 
