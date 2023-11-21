@@ -304,3 +304,20 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("GET /api/users", () => {
+  describe("Functionality", () => {
+    test("200: should return an array of objects with keys of username, name and avatar_url", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(Array.isArray(body.users)).toBe(true);
+          expect(body.users.length).toBe(4);
+          body.users.forEach((user) => {
+            expect(Object.keys(user)).toMatchObject(["username", "name", "avatar_url"]);
+          });
+        });
+    });
+  });
+});

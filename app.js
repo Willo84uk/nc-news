@@ -5,12 +5,15 @@ const { getArticlesById, getArticles } = require("./controllers/articles.control
 const { postNewComment } = require("./controllers/comments.controllers")
 const { four0Four } = require("./controllers/api.controllers")
 const { getCommentsByArticle } = require("./controllers/comments.controllers")
+const { getAllUsers } = require("./controllers/users.controllers")
 
 const app = express()
 
 app.use(express.json())
 
 app.get("/api", getApi)
+
+app.get("/api/users", getAllUsers)
 
 app.get("/api/topics", getAllTopics)
 
