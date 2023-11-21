@@ -201,3 +201,37 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Functionality", () => {
+    test("204: should delete selected comment from db and return a 204 status", () => {
+      return request(app)
+        .delete("/api/comments/4")
+        .expect(204)
+        .then(() => {
+          return db.query(`SELECT * FROM comments WHERE comment_id = 4`)
+          .then(({rows}) => {
+            expect(rows.length).toBe(0)
+          })
+    });
+  });
+})
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if selected comment does not exist in the database", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for comment id in path", () => {
+      return request(app)
+        .delete("/api/comments/apples")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
