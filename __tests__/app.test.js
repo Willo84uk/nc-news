@@ -160,7 +160,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(body.comments.length).toBe(2);
           expect(body.comments).toBeSortedBy("created_at", {
             descending: true,
-          })
+          });
           body.comments.forEach((comment) => {
             expect(Object.keys(comment)).toMatchObject([
               "comment_id",
@@ -192,12 +192,77 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
     });
     test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
-        return request(app)
-          .get("/api/articles/apples/comments")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("bad request");
-          });
-      });
+      return request(app)
+        .get("/api/articles/apples/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  describe("Functionality", () => {
+    test("200: should update the votes on a given article and return an updated article object", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ inc_votes: -10 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(Object.keys(body.article)).toMatchObject([
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "body",
+            "created_at",
+            "votes",
+            "article_img_url",
+          ]);
+          expect(body.article.article_id).toBe(1);
+          expect(body.article.votes).toBe(90);
+        })
+        .then(() => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 20 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(Object.keys(body.article)).toMatchObject([
+                "article_id",
+                "title",
+                "topic",
+                "author",
+                "body",
+                "created_at",
+                "votes",
+                "article_img_url",
+              ]);
+              expect(body.article.article_id).toBe(1);
+              expect(body.article.votes).toBe(110);
+            });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if no selected article does not exist in the database", () => {
+      return request(app)
+        .patch("/api/articles/999")
+        .send({ inc_votes: 20 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article not found with this article id");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
+      return request(app)
+        .patch("/api/articles/apples")
+        .send({ inc_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
   });
 });
