@@ -4,7 +4,7 @@ const { handleCustomErrors, handleServerErrors, handlePsqlErrors } = require("./
 const { getArticlesById, getArticles, patchArticleVotes } = require("./controllers/articles.controllers")
 const { postNewComment } = require("./controllers/comments.controllers")
 const { four0Four } = require("./controllers/api.controllers")
-const { getCommentsByArticle } = require("./controllers/comments.controllers")
+const { getCommentsByArticle, deleteComment } = require("./controllers/comments.controllers")
 
 const app = express()
 
@@ -24,6 +24,7 @@ app.patch("/api/articles/:article_id", patchArticleVotes)
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticle)
 
+app.delete("/api/comments/:comment_id", deleteComment)
 
 app.get("*", four0Four)
 

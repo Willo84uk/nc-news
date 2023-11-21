@@ -387,3 +387,39 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  describe("Functionality", () => {
+    test("204: should delete selected comment from db and return a 204 status, a further request to the same api for the same comment should subsequently result in a 404 error 'comment not found'", () => {
+      return request(app)
+        .delete("/api/comments/4")
+        .expect(204)
+        .then(() => {
+          return request(app)
+          .delete("/api/comments/4")
+          .expect(404)
+          .then(({body}) => {
+            expect(body.msg).toBe("comment not found")
+          })
+    });
+  });
+})
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if selected comment does not exist in the database", () => {
+      return request(app)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for comment id in path", () => {
+      return request(app)
+        .delete("/api/comments/apples")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});

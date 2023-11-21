@@ -97,6 +97,12 @@
     }]
   },
 
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment as specified in the URL",
+    "queries": "Comments to be selected by comment id within the URL",
+    "exampleResponse": "204 Status"
+  },
+
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
