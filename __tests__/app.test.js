@@ -168,6 +168,22 @@ describe("POST /api/articles/:article_id/comments", () => {
           });
         });
     });
+    test("201: should insert new comment into the database and send back an object containing new comment ignoring any additional data that is sent", () => {
+      return request(app)
+        .post("/api/articles/6/comments")
+        .send({ username: "lurker", votes: 25, body: "It is good" })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            comment_id: 19,
+            body: "It is good",
+            article_id: 6,
+            author: "lurker",
+            votes: 0,
+            created_at: expect.any(String),
+          });
+        });
+    });
   });
   describe("Error handling", () => {
     test("404: should return a 404 error message if selected article does not exist in the database", () => {
@@ -197,7 +213,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           expect(body.msg).toBe("key not found in database");
         });
     });
-    test("400: should return a 400 error message if the any required data is missing", () => {
+    test("400: should return a 400 error message if any required data is missing", () => {
       return request(app)
         .post("/api/articles/2/comments")
         .send({ body: "Awful" })
