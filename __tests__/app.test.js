@@ -179,16 +179,6 @@ describe("GET /api/articles/:article_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.comments.length).toBe(0);
-          body.comments.forEach((comment) => {
-            expect(Object.keys(comment)).toMatchObject([
-              "comment_id",
-              "body",
-              "article_id",
-              "author",
-              "votes",
-              "created_at",
-            ]);
-          });
         });
     });
   });
@@ -211,7 +201,3 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
-
-//errors
-//article id is in the incorrect format
-//article does not exist
