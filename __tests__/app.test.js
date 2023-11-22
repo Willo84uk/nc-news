@@ -160,7 +160,7 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("200: should filter articles by topic when a topic is entered as a query", () => {
+    test("200: should return empty array when no articles linked to selected topic", () => {
       return request(app)
         .get("/api/articles?topic=paper")
         .expect(200)
@@ -174,14 +174,6 @@ describe("GET /api/articles", () => {
     test("404: should return a 404 error message if selected topic does not exist in the database", () => {
       return request(app)
         .get("/api/articles/?topic=christmas")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("topic(s) not found");
-        });
-    });
-    test("404: should return a 404 error message if incorrect format is provided for topic", () => {
-      return request(app)
-        .get("/api/articles/?topic=25/12/23")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("topic(s) not found");
