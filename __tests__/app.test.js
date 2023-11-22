@@ -154,7 +154,7 @@ describe("GET /api/articles", () => {
               "article_img_url",
               "comment_count",
             ]);
-            expect(article.topic).toBe("mitch")
+            expect(article.topic).toBe("mitch");
           });
           expect(body.articles.length).toBe(12);
           expect(body.articles).toBeSortedBy("created_at", {
@@ -171,6 +171,98 @@ describe("GET /api/articles", () => {
           expect(body.articles.length).toBe(0);
         });
     });
+    test("200: should sort articles by any given column when a sort_by query is provided", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(13);
+          expect(body.articles).toBeSortedBy("title", {
+            descending: true,
+          });
+        });
+    });
+    test("200: should sort articles by any given column when a sort_by query is provided", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(13);
+          expect(body.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
+        });
+    });
+    test("200: should sort articles in ascending order when order=asc is specified as a query", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(13);
+          expect(body.articles).toBeSortedBy("created_at", {
+            ascending: true,
+          });
+        });
+    });
+    test("200: should return articles sorted correctly when provided with filter and sort_by and order queries", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=article_id&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(12);
+          expect(body.articles).toBeSortedBy("article_id", {
+            ascending: true,
+          });
+        });
+    });
   });
   describe("Error handling", () => {
     test("404: should return a 404 error message if selected topic does not exist in the database", () => {
@@ -179,6 +271,22 @@ describe("GET /api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("topic(s) not found");
+        });
+    });
+    test("400: should return a 400 error message if sort_by does not exist in green list", () => {
+      return request(app)
+        .get("/api/articles/?sort_by=title; SELECT")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if order does not equal asc/desc", () => {
+      return request(app)
+        .get("/api/articles/?order=asc; SELECT")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
         });
     });
   });
@@ -476,4 +584,3 @@ describe("DELETE /api/comments/:comment_id", () => {
     });
   });
 });
-

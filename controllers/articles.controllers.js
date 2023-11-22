@@ -13,8 +13,8 @@ exports.getArticlesById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const {topic} = req.query
-    const articlesPromises = [selectArticles(topic), selectTopics(topic) ]
+    const {topic, sort_by, order} = req.query
+    const articlesPromises = [selectArticles(topic, sort_by, order), selectTopics(topic) ]
 
     Promise.all(articlesPromises)
     .then((resolvedPromises) => {
