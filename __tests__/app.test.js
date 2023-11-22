@@ -86,8 +86,10 @@ describe("GET /api/articles/:article_id", () => {
             "created_at",
             "votes",
             "article_img_url",
+            "comment_count",
           ]);
           expect(body.article.article_id).toBe(5);
+          expect(body.article.comment_count).toBe("2");
         });
     });
   });
