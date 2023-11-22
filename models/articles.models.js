@@ -1,4 +1,5 @@
 const db = require("../db/connection")
+const { sort } = require("../db/data/test-data/articles")
 
 exports.selectArticlesById = (articleId) => {
     return db.query(`
@@ -15,8 +16,14 @@ exports.selectArticlesById = (articleId) => {
     }) 
 }
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
     const queryValues = []
+    const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url", "comment_count"]
+    const validOrder = ["desc", "asc"]
+    if(!validSortBy.includes(sort_by) || !validOrder.includes(order)){
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
     let queryStr = `
     SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count
     FROM articles 
@@ -27,8 +34,7 @@ exports.selectArticles = (topic) => {
         queryStr += `WHERE topic = $1 `
     }
     
-    queryStr += `GROUP BY articles.article_id
-    ORDER BY created_at DESC;`
+    queryStr += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
     
     return db.query(queryStr, queryValues)
    
