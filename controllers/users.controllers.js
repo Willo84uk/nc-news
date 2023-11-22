@@ -1,3 +1,4 @@
+const { head } = require("../app")
 const db = require("../db/connection")
 const { selectAllUsers } = require("../models/users.models")
 

@@ -1,33 +1,21 @@
 const express = require("express")
-const { getApi, getTopics } = require("./controllers/topics.controllers")
+const { getApi } = require("./controllers/topics.controllers")
 const { handleCustomErrors, handleServerErrors, handlePsqlErrors } = require("./errors")
-const { getArticlesById, getArticles, patchArticleVotes } = require("./controllers/articles.controllers")
-const { postNewComment } = require("./controllers/comments.controllers")
 const { four0Four } = require("./controllers/api.controllers")
-const { getCommentsByArticle, deleteComment } = require("./controllers/comments.controllers")
-const { getAllUsers } = require("./controllers/users.controllers")
+const usersRouter = require("./routes/users-router")
+const topicsRouter = require("./routes/topics.router")
+const articlesRouter = require("./routes/articles.router")
+const commentsRouter = require("./routes/comments.router")
 
 const app = express()
-
 app.use(express.json());
 
 app.get("/api", getApi)
 
-app.get("/api/users", getAllUsers)
-
-app.get("/api/topics", getTopics)
-
-app.get("/api/articles", getArticles)
-
-app.get("/api/articles/:article_id", getArticlesById)
-
-app.post("/api/articles/:article_id/comments", postNewComment)
-
-app.patch("/api/articles/:article_id", patchArticleVotes)
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticle)
-
-app.delete("/api/comments/:comment_id", deleteComment)
+app.use('/api/users', usersRouter)
+app.use('/api/topics', topicsRouter)
+app.use('/api/articles', articlesRouter)
+app.use('/api/comments', commentsRouter)
 
 app.get("*", four0Four)
 
