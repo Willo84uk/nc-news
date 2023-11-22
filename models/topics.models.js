@@ -1,11 +1,19 @@
+const { query } = require("express")
 const db = require("../db/connection")
 
-exports.selectAllTopics = () => {
-    return db.query(`
-    SELECT * FROM topics;`)
+exports.selectTopics = (topic) => {
+    const queryValues = []
+    let queryStr = `SELECT * FROM topics `
+    
+    if(topic){
+        queryValues.push(topic)
+        queryStr += `WHERE slug = $1 `
+    }
+    
+    return db.query(queryStr, queryValues)
     .then(({rows}) => {
         if(!rows.length){
-            return Promise.reject({status: 404, msg: "no topics exist"})
+            return Promise.reject({status: 404, msg: "topic(s) not found"})
         }        
         return {rows}
     })

@@ -1,5 +1,5 @@
 const express = require("express")
-const { getAllTopics, getApi } = require("./controllers/topics.controllers")
+const { getApi, getTopics } = require("./controllers/topics.controllers")
 const { handleCustomErrors, handleServerErrors, handlePsqlErrors } = require("./errors")
 const { getArticlesById, getArticles, patchArticleVotes } = require("./controllers/articles.controllers")
 const { postNewComment } = require("./controllers/comments.controllers")
@@ -15,7 +15,7 @@ app.get("/api", getApi)
 
 app.get("/api/users", getAllUsers)
 
-app.get("/api/topics", getAllTopics)
+app.get("/api/topics", getTopics)
 
 app.get("/api/articles", getArticles)
 

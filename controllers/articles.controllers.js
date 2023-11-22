@@ -1,4 +1,5 @@
 const { selectArticlesById, selectArticles, updateArticleVotes } = require("../models/articles.models")
+const { selectTopics } = require("../models/topics.models")
 
 exports.getArticlesById = (req, res, next) => {
     const articleId = (req.params.article_id)
@@ -12,9 +13,13 @@ exports.getArticlesById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    selectArticles()
-    .then(({rows}) => {
-        res.status(200).send({articles: rows})
+    const {topic} = req.query
+    const articlesPromises = [selectArticles(topic), selectTopics(topic) ]
+
+    Promise.all(articlesPromises)
+    .then((resolvedPromises) => {
+        const articles = resolvedPromises[0].rows
+        res.status(200).send({articles: articles})
     })
     .catch((err) => {
         next(err)

@@ -12,14 +12,24 @@ exports.selectArticlesById = (articleId) => {
     }) 
 }
 
-exports.selectArticles = () => {
-    return db.query(`
+exports.selectArticles = (topic) => {
+    const queryValues = []
+    let queryStr = `
     SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count
     FROM articles 
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC`)
-    .then(({rows}) => {    
+    LEFT JOIN comments ON articles.article_id = comments.article_id ` 
+    
+    if(topic){
+        queryValues.push(topic)
+        queryStr += `WHERE topic = $1 `
+    }
+    
+    queryStr += `GROUP BY articles.article_id
+    ORDER BY created_at DESC;`
+    
+    return db.query(queryStr, queryValues)
+   
+    .then(({rows}) => { 
         return {rows}
     })
 }
