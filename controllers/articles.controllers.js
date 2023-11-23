@@ -14,13 +14,14 @@ exports.getArticlesById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    const {topic, sort_by, order} = req.query
-    const articlesPromises = [selectArticles(topic, sort_by, order), selectTopics(topic) ]
+    const {topic, sort_by, order, limit, p} = req.query
+    const articlesPromises = [selectArticles(topic, sort_by, order, limit, p), selectTopics(topic) ]
 
     Promise.all(articlesPromises)
     .then((resolvedPromises) => {
-        const articles = resolvedPromises[0].rows
-        res.status(200).send({articles: articles})
+        const articles = resolvedPromises[0].articles
+        const count = resolvedPromises[0].count
+        res.status(200).send({articles: articles, total_count: count})
     })
     .catch((err) => {
         next(err)

@@ -132,7 +132,7 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(13);
+          expect(body.total_count).toBe(13);
           expect(body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -156,7 +156,7 @@ describe("GET /api/articles", () => {
             ]);
             expect(article.topic).toBe("mitch");
           });
-          expect(body.articles.length).toBe(12);
+          expect(body.total_count).toBe(12);
           expect(body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
@@ -188,7 +188,7 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(13);
+          expect(body.total_count).toBe(13);
           expect(body.articles).toBeSortedBy("title", {
             descending: true,
           });
@@ -211,7 +211,7 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(13);
+          expect(body.total_count).toBe(13);
           expect(body.articles).toBeSortedBy("votes", {
             descending: true,
           });
@@ -234,7 +234,7 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(13);
+          expect(body.total_count).toBe(13);
           expect(body.articles).toBeSortedBy("created_at", {
             ascending: true,
           });
@@ -257,10 +257,81 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(12);
+          expect(body.total_count).toBe(12);
           expect(body.articles).toBeSortedBy("article_id", {
             ascending: true,
           });
+        });
+    });
+    test("200: should return articles paginated and a total_count property excluding the limit ", () => {
+      return request(app)
+        .get(
+          "/api/articles?limit=5&p=1&sort_by=article_id&order=asc&topic=mitch"
+        )
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(5);
+          expect(body.total_count).toBe(12);
+        });
+    });
+    test("200: should return articles paginated and a total_count property excluding the limit ", () => {
+      return request(app)
+        .get(
+          "/api/articles?limit=25&p=1&sort_by=article_id&order=asc&topic=mitch"
+        )
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(12);
+          expect(body.total_count).toBe(12);
+        });
+    });
+    test("200: should return articles paginated and a total_count property excluding the limit at the selected page ", () => {
+      return request(app)
+        .get(
+          "/api/articles?limit=5&p=3&sort_by=article_id&order=asc"
+        )
+        .expect(200)
+        .then(({ body }) => {
+          body.articles.forEach((article) => {
+            expect(Object.keys(article)).toMatchObject([
+              "article_id",
+              "title",
+              "topic",
+              "author",
+              "created_at",
+              "votes",
+              "article_img_url",
+              "comment_count",
+            ]);
+          });
+          expect(body.articles.length).toBe(3);
+          expect(body.articles[0].article_id).toBe(11)
+          expect(body.articles[2].article_id).toBe(13)
+          expect(body.total_count).toBe(13);
         });
     });
   });
@@ -287,6 +358,22 @@ describe("GET /api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if page number is out of range", () => {
+      return request(app)
+      .get("/api/articles?limit=5&p=0&sort_by=article_id&order=asc")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("page out of range");
+        });
+    });
+    test("400: should return a 400 error message if page number is out of range", () => {
+      return request(app)
+      .get("/api/articles?limit=5&p=25&sort_by=article_id&order=asc")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("page out of range");
         });
     });
   });
@@ -386,7 +473,7 @@ describe("GET /api/articles", () => {
               "comment_count",
             ]);
           });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles.length).toBe(10);
           expect(body.articles).toBeSortedBy("created_at", {
             descending: true,
           });
