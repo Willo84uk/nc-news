@@ -513,6 +513,42 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(body.comments.length).toBe(0);
         });
     });
+    test("200: should return an array containing selected comments linked to article id, should be limited by query and select correct page by query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=10&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(1);
+          expect(body.comments[0].comment_id).toBe(9)
+          })
+        
+    });
+    test("200: should return an array containing selected comments linked to article id, should be limited by query and select correct page by query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=10&p=1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments.length).toBe(10);
+          expect(body.comments[0].comment_id).toBe(5)
+          })
+        
+    });
+    test("400: should return a 400 error message if page number is out of range", () => {
+      return request(app)
+      .get("/api/articles/1/comments?limit=5&p=0")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("page out of range");
+        });
+    });
+    test("400: should return a 400 error message if page number is out of range", () => {
+      return request(app)
+      .get("/api/articles/1/comments?limit=5&p=25")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("page out of range");
+        });
+    });
   });
   describe("Error handling", () => {
     test("404: should return a 404 error message if selected article does not exist in the database", () => {

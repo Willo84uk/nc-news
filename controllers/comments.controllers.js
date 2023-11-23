@@ -17,11 +17,12 @@ exports.postNewComment = (req, res, next) => {
 
 exports.getCommentsByArticle = (req, res, next) => {
     const articleId = req.params.article_id
-    const commentsPromises = [selectCommentsByArticle(articleId), selectArticlesById(articleId)]
+    const {limit, p} = req.query
+    const commentsPromises = [selectCommentsByArticle(articleId, limit, p), selectArticlesById(articleId)]
     
     Promise.all(commentsPromises)
     .then((resolvedPromises) => {
-        const comments = resolvedPromises[0].rows
+        const comments = resolvedPromises[0]
         res.status(200).send({comments})
     })
     .catch((err) => {
