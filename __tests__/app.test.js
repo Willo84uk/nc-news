@@ -584,3 +584,31 @@ describe("DELETE /api/comments/:comment_id", () => {
     });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  describe("Functionality", () => {
+    test("200: should return an object containing selected user including the following properties: username, avatar_url, name", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).toMatchObject({
+            username: "rogersop",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+            name: "paul",
+          });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if no user exists with this username", () => {
+      return request(app)
+        .get("/api/users/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("user not found with this username");
+        });
+    });
+  });
+});

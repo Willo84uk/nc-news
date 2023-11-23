@@ -33,6 +33,15 @@
     }
   },
 
+  "GET /api/users/:username": {
+    "description": "serves an object of selected user",
+    "queries": "User to be selected by username within the URL",
+    "formatOfRequestBody": "No request body required",
+    "exampleResponse": {
+      "users": [{ "username": "tommy56", "name": "Tom", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" }]
+    }
+  },
+
   "GET /api/articles/:article_id": {
     "description": "serves an individual article as specified by the URL",
     "queries": "Article to be selected by article id within the URL",
