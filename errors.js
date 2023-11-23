@@ -3,6 +3,8 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "bad request" });
   } else if(err.code === "23503"){
     res.status(404).send({ msg: "cannot match provided data"})
+  } else if(err.code === "2201X"){
+    res.status(400).send({ msg: "page out of range"})
   } else {
     next(err);
   }

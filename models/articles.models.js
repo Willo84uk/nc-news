@@ -16,11 +16,14 @@ exports.selectArticlesById = (articleId) => {
     }) 
 }
 
-exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc", limit = 10, p = 1) => {
     const queryValues = []
     const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url", "comment_count"]
     const validOrder = ["desc", "asc"]
-    if(!validSortBy.includes(sort_by) || !validOrder.includes(order)){
+    const validLimit = /^\d+$/.test(limit)
+    const validPage = /^\d+$/.test(p)
+    const offset = (p-1)*limit
+    if(!validSortBy.includes(sort_by) || !validOrder.includes(order) || !validPage || !validLimit){
         return Promise.reject({status: 400, msg: "bad request"})
     }
 
@@ -34,12 +37,22 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
         queryStr += `WHERE topic = $1 `
     }
     
-    queryStr += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
-    
-    return db.query(queryStr, queryValues)
-   
-    .then(({rows}) => { 
-        return {rows}
+    queryStr += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order} ` 
+
+    return outputCount = db.query(queryStr, queryValues).then(({rows}) => {
+        return rows.length
+    }).then((outputCount) =>{
+
+        queryStr += `LIMIT ${limit} OFFSET ${offset};`
+
+        const articles = db.query(queryStr, queryValues)
+        return articles
+        .then(({rows}) => {
+            if(p>Math.ceil(outputCount/limit) && p>1){
+                return Promise.reject({status: 400, msg: "page out of range"})
+            }
+            return {articles: rows, count: outputCount}
+        })
     })
 }
 
