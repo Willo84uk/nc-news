@@ -35,7 +35,7 @@
 
   "GET /api/users/:username": {
     "description": "serves an object of selected user",
-    "queries": "User to be selected by username within the URL",
+    "queries": "No queries accepted",
     "formatOfRequestBody": "No request body required",
     "exampleResponse": {
       "users": [{ "username": "tommy56", "name": "Tom", "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png" }]
@@ -89,7 +89,7 @@
 
   "GET /api/articles/:article_id": {
     "description": "serves an individual article as specified by the URL",
-    "queries": "Article to be selected by article id within the URL",
+    "queries": "No queries accepted",
     "exampleResponse": {
       "article_id": "5",
       "title": "UNCOVERED: catspiracy to bring down democracy",
@@ -105,7 +105,7 @@
 
   "PATCH /api/articles/:article_id": {
     "description": "increases the given article id's votecount as per the body provided in the request and returns an updated article",
-    "queries": "Article to be selected by article id within the URL",
+    "queries": "No queries accepted",
     "formatOfRequestBody": {"inc_votes": 8},
     "exampleResponse": {
       "article_id": "5",
@@ -121,7 +121,7 @@
 
   "POST /api/articles/:article_id/comments": {
     "description": "receives and inserts a new comment into the comments table returning a copy of the new comment",
-    "queries": "Article to be selected by article id within the URL",
+    "queries": ["limit", "p"],
     "formatOfRequestBody": {"username":"author_here", "body": "comment here"},
     "exampleResponse": {
       "comment_id": "19",
@@ -135,13 +135,13 @@
 
   "DELETE /api/comments/:comment_id": {
     "description": "deletes comment as specified in the URL",
-    "queries": "Comments to be selected by comment id within the URL",
+    "queries": "No queries accepted",
     "exampleResponse": "204 Status"
   },
 
   "PATCH /api/comments/:comment_id": {
     "description": "increases the given comment id's votecount as per the body provided in the request and returns an updated comment",
-    "queries": "Comment to be selected by comment id within the URL",
+    "queries": "No queries accepted",
     "formatOfRequestBody": {"inc_votes": 8},
     "exampleResponse": {
       "body": "Massive intercranial brain haemorrhage",

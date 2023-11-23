@@ -10,17 +10,38 @@ exports.insertNewComment = (username, body, articleId) => {
 }
 
 
-exports.selectCommentsByArticle = (articleId) => {
+exports.selectCommentsByArticle = (articleId, limit = 10, p=1) => {
+  const validLimit = /^\d+$/.test(limit)
+  const validPage = /^\d+$/.test(p)
+  const offset = (p-1)*limit
+  
+  if(!validLimit || !validPage){
+    return Promise.reject({status: 400, msg: "XXXbad requestXXX"})
+  }
+
   return db
     .query(
       `
     SELECT *
     FROM comments
-    WHERE article_id = $1 ORDER BY created_at DESC`,
+    WHERE article_id = $1 ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
       [articleId]
     )
     .then(({ rows }) => {
-      return { rows };
+      return noLimitQuery = db
+        .query(
+          `
+        SELECT *
+        FROM comments
+        WHERE article_id = $1 ORDER BY created_at DESC`,
+          [articleId]
+        ).then((result) => {
+          const resultLength = result.rows.length
+          if(p>Math.ceil(resultLength/limit) && p>1){
+            return Promise.reject({status: 400, msg: "page out of range"})
+          }
+          return rows
+        })
     });
 };
 
