@@ -16,7 +16,7 @@ exports.selectCommentsByArticle = (articleId, limit = 10, p=1) => {
   const offset = (p-1)*limit
   
   if(!validLimit || !validPage){
-    return Promise.reject({status: 400, msg: "XXXbad requestXXX"})
+    return Promise.reject({status: 400, msg: "bad request"})
   }
 
   return db

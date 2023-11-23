@@ -70,6 +70,53 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("POST /api/topics", () => {
+  describe("Functionality", () => {
+    test("201: should create a new topic in the db and return the created topic", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "coding", description: "all about coding" })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toMatchObject({
+            slug: "coding",
+            description: "all about coding",
+          });
+        });
+    });
+    test("201: should create a new topic in the db and return the created topic even if too much data provided", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "coding", extraData: "I'm extra", description: "all about coding" })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic).toMatchObject({
+            slug: "coding",
+            description: "all about coding",
+          });
+        });
+    });
+    test("403: should return a 403 error message if user tries to create a topic that already exists", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "cats", description: "all about coding" })
+        .expect(403)
+        .then(({ body }) => {
+          expect(body.msg).toBe("topic already exists");
+        });
+    });
+    test("400: should return a 400 error message if user tries to create a topic but misses required data", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ description: "all about coding" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   describe("Functionality", () => {
     test("200: should return an object containing selected article including the following properties: author, title, article_id, body, topic, created_at, votes, art_img_url ", () => {
@@ -311,9 +358,7 @@ describe("GET /api/articles", () => {
     });
     test("200: should return articles paginated and a total_count property excluding the limit at the selected page ", () => {
       return request(app)
-        .get(
-          "/api/articles?limit=5&p=3&sort_by=article_id&order=asc"
-        )
+        .get("/api/articles?limit=5&p=3&sort_by=article_id&order=asc")
         .expect(200)
         .then(({ body }) => {
           body.articles.forEach((article) => {
@@ -329,8 +374,8 @@ describe("GET /api/articles", () => {
             ]);
           });
           expect(body.articles.length).toBe(3);
-          expect(body.articles[0].article_id).toBe(11)
-          expect(body.articles[2].article_id).toBe(13)
+          expect(body.articles[0].article_id).toBe(11);
+          expect(body.articles[2].article_id).toBe(13);
           expect(body.total_count).toBe(13);
         });
     });
@@ -362,7 +407,7 @@ describe("GET /api/articles", () => {
     });
     test("400: should return a 400 error message if page number is out of range", () => {
       return request(app)
-      .get("/api/articles?limit=5&p=0&sort_by=article_id&order=asc")
+        .get("/api/articles?limit=5&p=0&sort_by=article_id&order=asc")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("page out of range");
@@ -370,10 +415,26 @@ describe("GET /api/articles", () => {
     });
     test("400: should return a 400 error message if page number is out of range", () => {
       return request(app)
-      .get("/api/articles?limit=5&p=25&sort_by=article_id&order=asc")
+        .get("/api/articles?limit=5&p=25&sort_by=article_id&order=asc")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("page out of range");
+        });
+    });
+    test("400: should return a 400 error message if page number is in an invalid format", () => {
+      return request(app)
+        .get("/api/articles?limit=5&p=sagdad")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if limit is in an invalid format", () => {
+      return request(app)
+        .get("/api/articles?limit=asgd&p=1")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
         });
     });
   });
@@ -519,9 +580,8 @@ describe("GET /api/articles/:article_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.comments.length).toBe(1);
-          expect(body.comments[0].comment_id).toBe(9)
-          })
-        
+          expect(body.comments[0].comment_id).toBe(9);
+        });
     });
     test("200: should return an array containing selected comments linked to article id, should be limited by query and select correct page by query", () => {
       return request(app)
@@ -529,13 +589,12 @@ describe("GET /api/articles/:article_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.comments.length).toBe(10);
-          expect(body.comments[0].comment_id).toBe(5)
-          })
-        
+          expect(body.comments[0].comment_id).toBe(5);
+        });
     });
     test("400: should return a 400 error message if page number is out of range", () => {
       return request(app)
-      .get("/api/articles/1/comments?limit=5&p=0")
+        .get("/api/articles/1/comments?limit=5&p=0")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("page out of range");
@@ -543,10 +602,26 @@ describe("GET /api/articles/:article_id/comments", () => {
     });
     test("400: should return a 400 error message if page number is out of range", () => {
       return request(app)
-      .get("/api/articles/1/comments?limit=5&p=25")
+        .get("/api/articles/1/comments?limit=5&p=25")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("page out of range");
+        });
+    });
+    test("400: should return a 400 error message if page number is in an invalid format", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=sagdad")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if limit is in an invalid format", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=asgd&p=1")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
         });
     });
   });

@@ -24,6 +24,15 @@
     }
   },
 
+  "POST /api/topics": {
+    "description": "receives and inserts a new topic into the topics table returning a copy of the new topic",
+    "queries": "No queries accepted",
+    "formatOfRequestBody": { "slug": "coding", "description": "all about coding" },
+    "exampleResponse": {
+      "topics": {"topic": { "slug": "coding", "description": "all about coding" }}
+    }
+  },
+
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": "No queries accepted",
