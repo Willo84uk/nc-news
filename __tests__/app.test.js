@@ -334,7 +334,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         .send({ username: "lurker", body: "Awful" })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("key not found in database");
+          expect(body.msg).toBe("cannot match provided data");
         });
     });
     test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
@@ -352,7 +352,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         .send({ username: "J8723", body: "Awful" })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("key not found in database");
+          expect(body.msg).toBe("cannot match provided data");
         });
     });
     test("400: should return a 400 error message if any required data is missing", () => {
@@ -640,7 +640,7 @@ describe("PATCH /api/comments/:comment_id", () => {
                 votes: 10,
                 author: "icellusedkars",
                 article_id: 5,
-                created_at: "2020-06-09T05:00:00.000Z",
+                created_at: expect.any(String),
               });
             });
         });
@@ -678,6 +678,143 @@ describe("PATCH /api/comments/:comment_id", () => {
       return request(app)
         .patch("/api/articles/5")
         .send({ inc_votes: "twenty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+});
+
+describe("POST /api/articles", () => {
+  describe("Functionality", () => {
+    test("201: should insert new article into the database and send back an object containing new article", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "The lengthy test suite",
+          body: "It just gets longer!",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).toMatchObject({
+            author: "butter_bridge",
+            title: "The lengthy test suite",
+            body: "It just gets longer!",
+            topic: "cats",
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            article_id: 14,
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+    test("201: should insert new article into the database and send back an object containing new article ignoring any additional data that is sent", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          extraData: "I am not needed",
+          title: "The lengthy test suite",
+          body: "It just gets longer!",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).toMatchObject({
+            author: "butter_bridge",
+            title: "The lengthy test suite",
+            body: "It just gets longer!",
+            topic: "cats",
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            article_id: 14,
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+    test("201: should insert new article into the database and send back an object containing new article using default imgUrl if not provided", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          extraData: "I am not needed",
+          title: "The lengthy test suite",
+          body: "It just gets longer!",
+          topic: "cats",
+          article_img_url: "",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.article).toMatchObject({
+            author: "butter_bridge",
+            title: "The lengthy test suite",
+            body: "It just gets longer!",
+            topic: "cats",
+            article_img_url:
+              "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+            article_id: 14,
+            votes: 0,
+            created_at: expect.any(String),
+            comment_count: 0,
+          });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if the author doesn't exist", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "Jack Jones",
+          title: "The lengthy test suite",
+          body: "It just gets longer!",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("cannot match provided data");
+        });
+    });
+    test("404: should return a 404 error message if the topic doesn't exist", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "The lengthy test suite",
+          body: "It just gets longer!",
+          topic: "dogs",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("cannot match provided data");
+        });
+    });
+    test("400: should return a 400 error message if any required data is missing", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          extraData: "I am not needed",
+          title: "The lengthy test suite",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        })
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("bad request");

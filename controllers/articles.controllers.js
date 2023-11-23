@@ -1,4 +1,4 @@
-const { selectArticlesById, selectArticles, updateArticleVotes } = require("../models/articles.models")
+const { selectArticlesById, selectArticles, updateArticleVotes, insertNewArticle } = require("../models/articles.models")
 const { selectTopics } = require("../models/topics.models")
 const { updateVotes } = require("../models/votes.models")
 
@@ -33,6 +33,18 @@ exports.patchArticleVotes = (req, res, next) => {
     updateVotes(voteAdjustment, articleId)
     .then(({rows}) => {
         res.status(200).send({article: rows[0]})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.postNewArticle = (req, res, next) => {
+    const { author, title, body, topic, article_img_url } = req.body
+    insertNewArticle(author, title, body, topic, article_img_url)
+    .then(({rows}) => {
+        rows[0].comment_count = 0
+        res.status(201).send({article: rows[0]})
     })
     .catch((err) => {
         next(err)

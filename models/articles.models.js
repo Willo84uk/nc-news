@@ -42,3 +42,16 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
         return {rows}
     })
 }
+
+exports.insertNewArticle = (author, title, body, topic, imgUrl) => {
+    let columnsToInsert = "author, title, body, topic"
+    let numberOfValuesToInsert = "$1, $2, $3, $4"
+    const valuesToInsert = [author, title, body, topic]
+
+    if(imgUrl) {columnsToInsert += ", article_img_url", numberOfValuesToInsert += ", $5", valuesToInsert.push(imgUrl)}  
+    
+    return db.query(`
+    INSERT INTO articles (${columnsToInsert}) 
+    VALUES (${numberOfValuesToInsert}) RETURNING *`, 
+    valuesToInsert)
+}

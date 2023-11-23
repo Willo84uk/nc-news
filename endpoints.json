@@ -42,6 +42,51 @@
     }
   },
 
+  "GET /api/articles": {
+    "description": "serves an array of all articles",
+    "queries": ["author", "topic", "sort_by", "order"],
+    "formatOfRequestBody": "No request body required",
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": 6
+        }
+      ]
+    }
+  },
+
+  "POST /api/articles": {
+    "description": "receives and inserts a new article into the articles table returning a copy of the new article",
+    "queries": "No queries accepted",
+    "special notes": "article_img_url is optional and will default if not provided",
+    "formatOfRequestBody": {
+      "author": "butter_bridge",
+      "title": "The lengthy test suite",
+      "body": "It just gets longer!",
+      "topic": "cats",
+      "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    },
+    "exampleResponse": {
+      "author": "butter_bridge",
+      "title": "The lengthy test suite",
+      "body": "It just gets longer!",
+      "topic": "cats",
+      "article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "article_id": 14,
+      "votes": 0,
+      "created_at": "2020-08-03T13:14:00.000Z",
+      "comment_count": 0
+    }
+  },
+
   "GET /api/articles/:article_id": {
     "description": "serves an individual article as specified by the URL",
     "queries": "Article to be selected by article id within the URL",
@@ -93,6 +138,7 @@
     "queries": "Comments to be selected by comment id within the URL",
     "exampleResponse": "204 Status"
   },
+
   "PATCH /api/comments/:comment_id": {
     "description": "increases the given comment id's votecount as per the body provided in the request and returns an updated comment",
     "queries": "Comment to be selected by comment id within the URL",
@@ -103,25 +149,6 @@
       "author": "icellusedkars",
       "article_id": 1,
       "created_at": "2023-11-21T14:12:26.429Z"
-    }
-  },
-
-  "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
-    "formatOfRequestBody": "No request body required",
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
-        }
-      ]
     }
   }
 }
