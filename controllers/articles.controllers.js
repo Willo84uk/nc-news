@@ -1,5 +1,6 @@
 const { selectArticlesById, selectArticles, updateArticleVotes } = require("../models/articles.models")
 const { selectTopics } = require("../models/topics.models")
+const { updateVotes } = require("../models/votes.models")
 
 exports.getArticlesById = (req, res, next) => {
     const articleId = (req.params.article_id)
@@ -29,7 +30,7 @@ exports.getArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
     const articleId = req.params.article_id
     const voteAdjustment = req.body.inc_votes
-    updateArticleVotes(voteAdjustment, articleId)
+    updateVotes(voteAdjustment, articleId)
     .then(({rows}) => {
         res.status(200).send({article: rows[0]})
     })

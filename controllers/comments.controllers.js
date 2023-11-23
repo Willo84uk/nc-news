@@ -1,6 +1,7 @@
 const { insertNewComment } = require("../models/comments.models")
 const { selectArticlesById } = require("../models/articles.models")
 const { selectCommentsByArticle, deleteCommentFromDb } = require("../models/comments.models")
+const { updateVotes } = require("../models/votes.models")
 
 exports.postNewComment = (req, res, next) => {
     const {username, body} = req.body
@@ -33,6 +34,18 @@ exports.deleteComment = (req, res, next) => {
     deleteCommentFromDb(commentId)
     .then(() => {
         res.status(204).send()
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.patchCommentVotes = (req, res, next) => {
+    const commentId = req.params.comment_id
+    const voteAdjustment = req.body.inc_votes
+    updateVotes(voteAdjustment, undefined, commentId)
+    .then(({rows}) => {
+        res.status(200).send({comment: rows[0]})
     })
     .catch((err) => {
         next(err)

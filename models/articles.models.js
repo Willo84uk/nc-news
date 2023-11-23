@@ -42,13 +42,3 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
         return {rows}
     })
 }
-
-exports.updateArticleVotes = (voteAdjustment, articleId) => {
-    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`, [voteAdjustment, articleId])
-    .then(({rows}) => {
-        if(!rows.length){
-            return Promise.reject({status: 404, msg: "article not found with this article id"})
-        }        
-        return {rows}
-    }) 
-}

@@ -516,7 +516,7 @@ describe("PATCH /api/articles/:article_id", () => {
         .send({ inc_votes: 20 })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("article not found with this article id");
+          expect(body.msg).toBe("item not found with specified id");
         });
     });
     test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
@@ -608,6 +608,79 @@ describe("GET /api/users/:username", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("user not found with this username");
+        });
+    });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  describe("Functionality", () => {
+    test("200: should update the votes on a given comment and return an updated comment object", () => {
+      return request(app)
+        .patch("/api/comments/14")
+        .send({ inc_votes: 14 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toMatchObject({
+            body: "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+            votes: 30,
+            author: "icellusedkars",
+            article_id: 5,
+            created_at: "2020-06-09T05:00:00.000Z",
+          });
+        })
+        .then(() => {
+          return request(app)
+            .patch("/api/comments/14")
+            .send({ inc_votes: -20 })
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comment).toMatchObject({
+                body: "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+                votes: 10,
+                author: "icellusedkars",
+                article_id: 5,
+                created_at: "2020-06-09T05:00:00.000Z",
+              });
+            });
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if no selected comment exists in the database", () => {
+      return request(app)
+        .patch("/api/comments/999")
+        .send({ inc_votes: 20 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("item not found with specified id");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for comment id in path", () => {
+      return request(app)
+        .patch("/api/comments/apples")
+        .send({ inc_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if inc_votes is not provided in request", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ number_of_votes: 20 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+    test("400: should return a 400 error message if inc_votes is provided in an incorrect format", () => {
+      return request(app)
+        .patch("/api/articles/5")
+        .send({ inc_votes: "twenty" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
         });
     });
   });
