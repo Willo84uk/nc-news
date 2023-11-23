@@ -1020,3 +1020,46 @@ describe("POST /api/articles", () => {
     });
   });
 });
+
+describe("DELETE /api/articles/:article_id", () => {
+  describe("Functionality", () => {
+    test("204: should delete selected article and all associated comments from db and return a 204 status, a further request to the same api for the same article or associated comment should subsequently result in a 404 error 'comment/article not found'", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then(() => {
+          return request(app)
+            .delete("/api/articles/1")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("article not found");
+            }).then(() => {
+              return request(app)
+                .delete("/api/comments/2")
+                .expect(404)
+                .then(({ body }) => {
+                  expect(body.msg).toBe("comment not found");
+                });
+              })
+        });
+    });
+  });
+  describe("Error handling", () => {
+    test("404: should return a 404 error message if selected article does not exist in the database", () => {
+      return request(app)
+        .delete("/api/articles/999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article not found");
+        });
+    });
+    test("400: should return a 400 error message if incorrect format is provided for article id in path", () => {
+      return request(app)
+        .delete("/api/articles/apples")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
+})

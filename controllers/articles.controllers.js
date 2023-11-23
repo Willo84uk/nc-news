@@ -1,4 +1,5 @@
-const { selectArticlesById, selectArticles, updateArticleVotes, insertNewArticle } = require("../models/articles.models")
+const { articleData } = require("../db/data/test-data")
+const { selectArticlesById, selectArticles, updateArticleVotes, insertNewArticle, deleteArticle } = require("../models/articles.models")
 const { selectTopics } = require("../models/topics.models")
 const { updateVotes } = require("../models/votes.models")
 
@@ -46,6 +47,17 @@ exports.postNewArticle = (req, res, next) => {
     .then(({rows}) => {
         rows[0].comment_count = 0
         res.status(201).send({article: rows[0]})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.removeArticle = (req, res, next) => {
+    const articleId = req.params.article_id
+    deleteArticle(articleId)
+    .then(() => {
+        res.status(204).send()
     })
     .catch((err) => {
         next(err)

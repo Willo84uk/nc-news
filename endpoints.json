@@ -112,6 +112,12 @@
     }
   },
 
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an individual article as specified by the URL fromt the database",
+    "queries": "No queries accepted",
+    "exampleResponse": "204"
+  },
+
   "PATCH /api/articles/:article_id": {
     "description": "increases the given article id's votecount as per the body provided in the request and returns an updated article",
     "queries": "No queries accepted",
