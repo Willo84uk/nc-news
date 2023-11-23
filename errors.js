@@ -5,6 +5,8 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(404).send({ msg: "cannot match provided data"})
   } else if(err.code === "2201X"){
     res.status(400).send({ msg: "page out of range"})
+  } else if(err.code === "23505"){
+    res.status(403).send({ msg: "topic already exists"})
   } else {
     next(err);
   }
