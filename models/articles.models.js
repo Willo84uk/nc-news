@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-const { sort } = require("../db/data/test-data/articles");
 
 exports.selectArticlesById = (articleId) => {
   return db

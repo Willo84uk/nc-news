@@ -1,5 +1,4 @@
-const { articleData } = require("../db/data/test-data")
-const { selectArticlesById, selectArticles, updateArticleVotes, insertNewArticle, deleteArticle } = require("../models/articles.models")
+const { selectArticlesById, selectArticles, insertNewArticle, deleteArticle } = require("../models/articles.models")
 const { selectTopics } = require("../models/topics.models")
 const { updateVotes } = require("../models/votes.models")
 
