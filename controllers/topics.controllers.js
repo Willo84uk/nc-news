@@ -1,5 +1,4 @@
 const { selectTopics, insertNewTopic } = require("../models/topics.models")
-const endpoints = require("../endpoints.json")
 
 exports.getTopics = (req, res, next) => {
     return selectTopics()
@@ -20,8 +19,4 @@ exports.postTopic = (req, res, next) => {
     .catch((err) => { 
         next(err)
       })
-}
-
-exports.getApi = (req, res, next) => {
-    res.status(200).send({endpoints})
 }

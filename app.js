@@ -1,7 +1,6 @@
 const express = require("express")
-const { getApi } = require("./controllers/topics.controllers")
 const { handleCustomErrors, handleServerErrors, handlePsqlErrors } = require("./errors")
-const { four0Four } = require("./controllers/api.controllers")
+const { four0Four, getApi } = require("./controllers/api.controllers")
 const usersRouter = require("./routes/users-router")
 const topicsRouter = require("./routes/topics.router")
 const articlesRouter = require("./routes/articles.router")
