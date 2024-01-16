@@ -4,7 +4,7 @@ This project is my backend project as part of my time with Northcoders and will 
 
 The app looks to provide a similar service to reddit and you can find a hosted verison of the project here: 
 
-https://nc-news-5sxy.onrender.com/
+https://nc-news-5sxy.onrender.com/api/
 
 To setup the project, you will need clone the repo from 
 
